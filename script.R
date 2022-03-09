@@ -30,22 +30,63 @@ head(data)
   ##
 
 # convert some variables to factors
-cols = c("agegroup", "conflict", "option")
-data[cols] = sapply(data[cols], factor) # convert to factor
+cols = c("ID", "agegroup", "conflict", "option")
+data[cols] = lapply(data[cols], factor) # convert to factor
 # add logRT column
 data$logRT = log(data$RT)
 
 
-#--------- DATA EXPLORE ---------#
-# aggregate response variables over trials
-data_agg = data %>% group_by(ID, agegroup, diff, conflict, option, wm) %>%
+#--------- LIST OF SUBSETTED/AGGREGATED DATA SETS ---------#
+# running list of all the subsets & aggregates used for exploration & analysis
+
+# agg for every condition combination per ID
+agg_all = data %>% group_by(ID, agegroup, wm, diff, conflict, option) %>%
   summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R))
 
-# describe covariates
-cols = c("agegroup", "diff", "conflict", "option", "wm")
-summary(data_agg[cols])
+# agg per ID
+agg_id = data %>% group_by(ID, wm) %>%
+  summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R))
+# agg per agegroup
+agg_age = data %>% group_by(agegroup) %>%
+  summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R), wm = mean(wm, na.rm=TRUE))
+# agg per conflict
+agg_cnf = data %>% group_by(conflict) %>%
+  summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R), wm = mean(wm, na.rm=TRUE))
+
+# subset of younger or older adults
+data_y = data %>% subset(agegroup = "younger adults")
+data_o = data %>% subset(agegroup = "older adults")
+
+
+
+
+
+#--------- DATA EXPLORE ---------#
+summary(data)
+
+# summary of age
+data_y %>% summary(); data_y %>% summarise(SD = sd(age))
+data_o %>% summary(); data_o %>% summarise(SD = sd(age))
+
+# counting number of trials for each participant
+trials = data %>% group_by(ID) %>% count() 
+trials$n %>% summary()
+plot(trials$n)
+
+# count trials for each level of experimental variables
+data$diff %>% table()
+data$option %>% table()
+data$delay %>% table()
+
+# summary of working memory variable
+agg_id$wm %>% summary()
+
 # describe response variables
-summary(data_agg[c("RT", "R")])
+data[c("RT", "R")] %>% summary()
+
+# sd of monetary reward
+data %>% summarise(SD = sd(A))
+data %>% summarise(SD = sd(B))
 
 
 ### plotting
