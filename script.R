@@ -13,28 +13,27 @@ rm(list = ls())
 data = read.table("data/data_delay_conditioning.txt", header = TRUE, sep = ",", dec = ".")
 # look at the data
 head(data)
-  ## 
-  # ID: participant ID,
-  # A: amount of reward for first option
-  # DA: delay until reward A is received (7, 14 days)
-  # B: amount of reward for second option
-  # DB: additional delay in days (on top of DA) of receiving reward B (14, 28, 42 days)
-  # R: chose later (delayed) option (= 1), binary
-  # RT: response time in ms
-  # diff: % difference in reward
-  # agegroup: younger adults vs. older adults
-  # conflict: low vs. high conflict (based on % difference)
-  # option: immediate vs. delayed
-  # delay: two vs. six weeks
-  # ...
-  ##
+    # ID: participant ID,
+    # A: amount of reward for first option
+    # DA: delay until reward A is received (7, 14 days)
+    # B: amount of reward for second option
+    # DB: additional delay in days (on top of DA) of receiving reward B (14, 28, 42 days)
+    # R: chose later (delayed) option (= 1), binary
+    # RT: response time in ms
+    # diff: % difference in reward
+    # agegroup: younger adults vs. older adults
+    # conflict: low vs. high conflict (based on % difference)
+    # option: immediate vs. delayed
+    # delay: two vs. six weeks
+    # em: episodic memory score
+    # wm: working memory score
+    # gf: fluid intelligence score
+    # speed: speed of processing score
+    ##
 
 # convert some variables to factors
 cols = c("ID", "agegroup", "conflict", "option")
 data[cols] = lapply(data[cols], factor) # convert to factor
-# add logRT column
-data$logRT = log(data$RT)
-
 
 #--------- LIST OF SUBSETTED/AGGREGATED DATA SETS ---------#
 # running list of all the subsets & aggregates used for exploration & analysis
@@ -89,27 +88,47 @@ data %>% summarise(SD = sd(A))
 data %>% summarise(SD = sd(B))
 
 
-### plotting
+### plotting of raw RT
+plot(data$RT)
+hist(data$RT, breaks = 40, col="steelblue")
+  skewness(data$RT)
+boxplot(data$RT, col="steelblue")
+# log-transform RT column
+data$logRT = log(data$RT)
+
+### plotting logRT
+hist(data$logRT, breaks = 80, col="steelblue")
+boxplot(data$logRT, col="steelblue")
+
+
+
+
+
+### outlier checking
+# cutoff via 300ms lower threshold >> 135
+subset(data, RT < 300)["logRT"] %>% nrow()
+data = data %>% subset(RT >= 300)
+
+# cutoffs via standard deviation ?? 
+cut_low = mean(data$logRT)-3*sd(data$logRT)
+cut_high = mean(data$logRT)+3*sd(data$logRT)
+# how many values are above or below 3SD of mean? >> 264 below, 0 above
+data %>% subset(logRT < cut_low | logRT > cut_high) %>% nrow()
+### REMOVE? 
+
+
+### plotting working memory
+hist(data$wm, breaks = 40, col="steelblue")
+
+
+
 
 # scatterplot wm & RT
-ggplot(data, aes(wm, logRT)) + 
-  geom_point(aes(colour = conflict), na.rm = TRUE) + 
-  geom_smooth(aes(colour = conflict), method = lm, na.rm = TRUE,  #aes(fill=R),
-              alpha = 0.2) +
-  theme_bw()
+plot(data$wm, data$logRT, col = "steelblue")
 
-# boxplot & histogram logRT
-ggplot(data, aes(logRT)) +
-  geom_histogram(bins=40) +
-  theme_bw()
-ggplot(data, aes(logRT)) +
-  geom_boxplot(na.rm = TRUE) + 
-  theme_bw()
 
-# boxplot working memory
-ggplot(data, aes(wm)) +
-  geom_boxplot(na.rm = TRUE) + 
-  theme_bw()
+
+
 
 #--------- ANALYSIS AND MODEL BUILD ---------#
 
