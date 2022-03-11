@@ -104,6 +104,7 @@ boxplot(data$logRT, col="steelblue")
 
 
 
+
 ### outlier checking
 # cutoff via 300ms lower threshold >> 135
 subset(data, RT < 300)["logRT"] %>% nrow()
