@@ -128,7 +128,12 @@ hist(data$wm, breaks = 40, col="steelblue")
 plot(data$wm, data$logRT, col = "steelblue")
 
 
+boxplot(data$RT, data$R)
 
+
+data$choice = 0
+data$choice[data$R == 1] = "late" 
+data$choice[data$R == 0] = "early" 
 
 
 #--------- ANALYSIS AND MODEL BUILD ---------#

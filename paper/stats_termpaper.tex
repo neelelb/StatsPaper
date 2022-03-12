@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TERM PAPER STATISTIC MAIN
+% author.................Neele Elbersgerd
+% matriculation..........5564097
+% course.................Probabilistic and Statistical Modelling
+% program................Master of Cognitive Neuroscience, FU Berlin
+% instructor.............Dr. Benjamin Eppinger
+% semester...............Winter term 2021/2022
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%--------IMPORT PREAMBEL
+	\input{stats_packages.tex}	
+	
+	
+\begin{document}
+	
+	%--------TITLE PAGE
+		\maketitle
+	
+	%--------CONTENT
+		Here comes the introduction, research and hypotheses. 	
+		
+		% It has been shown, that an external induced working memory load can induce an impulsive decision pattern in delayed discounting tasks (Hinson, Jameson, & Whitney, 2003; 10.1037/0278-7393.29.2.298)
+		%It has been shown, that working memory activation is associated with similar neural networks as activation during the delay discounting task, suggesting that working memory is necessary to perform these tasks (McClure et al., 2004; 10.1126/science.1100907). %PFC as important region, tho only n=14
+		% 
+		
+		\section{Methods}
+		%---------------------------
+		
+		\subsection{Participants}
+		The data set analysed for this term paper consists of experimental and covariate data of $N = 726$ participants. Of these, $n=362$ were younger adults ($M = 31$ years, $SD = 3.4$, age range $20-40$), while the other $n=364$ were older adults ($M = 73$ years, $SD = 3.8$, age range $64-88$). There is no further demographical data available. 
+		
+		%--------
+
+		\subsection{Procedure \& Design}
+		Participants completed several standardised psychometric tests on episodic memory, fluid intelligence, speed of processing, and working memory. The latter was operationalised based on the performance in three different tasks, namely Letter Updating Task, Spatial Updating Task, and Number-N-Back Task. Of the acquired covariates only the working memory data will be used in the following analysis.
+		The working memory score is missing for $148$ participants (\SI{20}{\percent}). \\ % TODO: what to do with missing wm ptc?
+		Participants took part in a delay discounting experiment, where they were asked to make binary choices between an early and a late monetary reward. 
+		The early option was presented on the left side of the screen and offered a reward in the range of $\$10$ and $\$24.99$ ($SD = \$4.3$) that was varying randomly throughout the experiment. The late option was always presented on the right side of the screen and differed from the first either \SI{1}{\percent}, \SI{10}{\percent}, \SI{20}{\percent}, \SI{30}{\percent}, or \SI{50}{\percent}. This resulted in an absolute value between $\$10.10$ and $\$37.48$ ($SD = \$6.1$). The percentage of difference between early and late option was also randomised within participants.
+		The early option was either promising the reward on the same day (further referred to as immediate condition) or in two weeks (delayed condition). The delay between the early and the late option was either two, four, or six weeks. Both of these manipulations were varying randomly within participants.
+		For each trial participants had to indicate via button press if they choose the early or the late option. A green triangle underneath the chosen option indicated registration of the choice. Each trial was presented for \SI{8}{\second}. The inter-trial interval varied between with an average of \SI{12}{\second}.
+		The behavioural data acquired was the binary choice per trial as well as the reaction time (from trial onset until button press in \SI{}{\milli\second}). 
+		Each combination of choice parameters (\SI{}{\percent} difference, option, delay) was repeated four times, resulting in a total of $120$ trials.
+
+		%--------
+
+		\subsection{Data Analysis}
+		
+			\subsubsection{Preprocessing}
+
+			The trials in which no response was given were discarded in favour of analysis (\SI{0.9}{\percent} of all acquired data). All participants had over \SI{80}{\percent} of valid trials and thus were kept in for analysis.
+			Due to the distribution of reaction times being right-skewed (skewness~$=0.99$), reaction times were log-transformed for the following analysis.
+				
+			% outlier correction:
+			To correct for outliers, $135$ trials with reactions too fast were discarded (cutoff at \SI{300}{\milli\second}). This decision relies on the assumption, that participants making a decision prior to \SI{300}{\milli\second} were presumably pressing before having processed the choice options fully.
+			% Additionally, $264$ trials where reaction time was lower than $3$~$SD$ below the mean were excluded from analysis.
+			% TODO: discard outliers via SD?
+			
+			
+				
+			\subsubsection{Model}
+				
+		
+		
+		
+		
+		
+		
+		\section{Results}
+		%---------------------------
+		
+		
+		
+		
+		Table~\ref{tab:BasicTable} summarizes the data. 
+		\lipsum[1]
+		\begin{table}
+			\caption{Sample Basic Table}
+			\label{tab:BasicTable}
+			\begin{tabular}{@{}llr@{}}         \toprule
+				\multicolumn{2}{c}{Item}        \\ \cmidrule(r){1-2}
+				Animal    & Description & Price \\ \midrule
+				Gnat      & per gram    & 13.65 \\
+				& each        &  0.01 \\
+				Gnu       & stuffed     & 92.50 \\
+				Emu       & stuffed     & 33.33 \\
+				Armadillo & frozen      &  8.99 \\ \bottomrule
+			\end{tabular}
+		\end{table}
+%		\begin{figure}
+%			\caption{This is my first figure caption.}
+%			\includegraphics[bb=0in 0in 2.5in 2.5in, height=2.5in, width=2.5in]{Figure1.pdf}
+%			\label{fig:Figure1}
+%		\end{figure}
+	
+				%\input{chapters/theory}
+
+	
+	%--------LITERATURE
+			\printbibliography[					% create page of references
+				heading=bibintoc,
+				title={Literaturverzeichnis}	
+			]
+										
+	%--------APPENDIX
+%			\addchap{Anhang}											
+%				\input{chapters/appendix}
+%					
+%			\addchap{Selbstständigkeitserklärung}
+%				\input{chapters/declaration}
+
+
+%--------END OF DOCUMENT
+\end{document}
+
+
+%% In part taken and adapted from:
+%% Copyright (C) 2019 by Daniel A. Weiss <daniel.weiss.led at gmail.com>
+%% Users may freely modify these files without permission, as long as the
+%% copyright line and this statement are maintained intact.
