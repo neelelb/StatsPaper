@@ -10,7 +10,7 @@ rm(list = ls())
 
 #--------- DATA QUICK IMPORT ---------#
 ## read in data file created in script 'import'
-data = read.table("data/data_delay_conditioning.txt", header = TRUE, sep = ",", dec = ".")
+data = read.table("data/data_all.txt", header = TRUE, sep = ",", dec = ".")
 # look at the data
 head(data)
     # ID: participant ID,
@@ -23,8 +23,9 @@ head(data)
     # diff: % difference in reward
     # agegroup: younger adults vs. older adults
     # conflict: low vs. high conflict (based on % difference)
-    # option: immediate vs. delayed
+    # condition: immediate vs. delayed option A
     # delay: two vs. six weeks
+    # choice: did the participants choose the early or late option
     # em: episodic memory score
     # wm: working memory score
     # gf: fluid intelligence score
@@ -32,14 +33,19 @@ head(data)
     ##
 
 # convert some variables to factors
-cols = c("ID", "agegroup", "conflict", "option")
+cols = c("ID", "agegroup", "conflict", "condition", "delay", "choice")
 data[cols] = lapply(data[cols], factor) # convert to factor
 
 #--------- LIST OF SUBSETTED/AGGREGATED DATA SETS ---------#
 # running list of all the subsets & aggregates used for exploration & analysis
 
+# subset of younger or older adults
+data_y = data %>% subset(agegroup == "younger adults")
+data_o = data %>% subset(agegroup == "older adults")
+
+
 # agg for every condition combination per ID
-agg_all = data %>% group_by(ID, agegroup, wm, diff, conflict, option) %>%
+agg_all = data %>% group_by(ID, agegroup, wm, diff, conflict, condition) %>%
   summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R))
 
 # agg per ID
@@ -51,10 +57,6 @@ agg_age = data %>% group_by(agegroup) %>%
 # agg per conflict
 agg_cnf = data %>% group_by(conflict) %>%
   summarise(.groups="keep", n = n(), logRT=mean(logRT), R=mean(R), wm = mean(wm, na.rm=TRUE))
-
-# subset of younger or older adults
-data_y = data %>% subset(agegroup = "younger adults")
-data_o = data %>% subset(agegroup = "older adults")
 
 
 
@@ -74,7 +76,7 @@ plot(trials$n)
 
 # count trials for each level of experimental variables
 data$diff %>% table()
-data$option %>% table()
+data$condition %>% table()
 data$delay %>% table()
 
 # summary of working memory variable
@@ -128,12 +130,16 @@ hist(data$wm, breaks = 40, col="steelblue")
 plot(data$wm, data$logRT, col = "steelblue")
 
 
-boxplot(data$RT, data$R)
+ggplot(data, aes(x=choice, y=RT)) +
+  geom_boxplot() +
+  theme_bw()
+
+ggplot(data, aes(x=condition, y=RT)) +
+  geom_boxplot() +
+  theme_bw()
 
 
-data$choice = 0
-data$choice[data$R == 1] = "late" 
-data$choice[data$R == 0] = "early" 
+
 
 
 #--------- ANALYSIS AND MODEL BUILD ---------#
