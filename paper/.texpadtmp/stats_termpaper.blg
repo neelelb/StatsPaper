@@ -1,9 +1,9 @@
 [0] Config.pm:311> INFO - This is Biber 2.16
 [0] Config.pm:314> INFO - Logfile is '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.blg'
-[97] biber-darwin:340> INFO - === Sat Mar 12, 2022, 16:40:34
-[118] Biber.pm:415> INFO - Reading '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bcf'
-[216] Biber.pm:952> INFO - Found 0 citekeys in bib section 0
-[233] Utils.pm:395> WARN - The file '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bcf' does not contain any citations!
-[244] bbl.pm:654> INFO - Writing '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bbl' with encoding 'UTF-8'
-[244] bbl.pm:757> INFO - Output to /Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bbl
-[244] Biber.pm:128> INFO - WARNINGS: 1
+[86] biber-darwin:340> INFO - === Sat Mar 12, 2022, 19:05:57
+[111] Biber.pm:415> INFO - Reading '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bcf'
+[206] Biber.pm:952> INFO - Found 0 citekeys in bib section 0
+[212] Utils.pm:395> WARN - The file '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bcf' does not contain any citations!
+[222] bbl.pm:654> INFO - Writing '/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bbl' with encoding 'UTF-8'
+[222] bbl.pm:757> INFO - Output to /Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.bbl
+[222] Biber.pm:128> INFO - WARNINGS: 1

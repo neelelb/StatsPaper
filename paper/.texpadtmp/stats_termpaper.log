@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.8)  12 MAR 2022 16:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.8)  12 MAR 2022 19:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1170,9 +1170,12 @@ File: ot1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ] [2]
 \openout4 = `stats_termpaper.ttt'.
 
- (stats_termpaper.ttt) [3]
+ (stats_termpaper.ttt)
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Warning: Empty bibliography on input line 96.
+ [3]
+
+LaTeX Warning: Empty bibliography on input line 109.
 
 AED endfloat: Processing end Figures and Tables [4] (/Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.ttt) [5
 
@@ -1193,7 +1196,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  107i,11n,106p,1140b,5011s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmri12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy10.pfb>
-Output written on /Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.pdf (5 pages, 99082 bytes).
+Output written on /Users/neele/Documents/github/StatsPaper/paper/.texpadtmp/stats_termpaper.pdf (5 pages, 99579 bytes).
 PDF statistics:
  97 PDF objects out of 1000 (max. 8388607)
  83 compressed objects within 1 object stream

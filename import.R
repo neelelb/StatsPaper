@@ -1,14 +1,18 @@
 #############################################################
-########### PROBABILISTIC & STATISTICAL MODELLING ########### 
+# TERM PAPER - CODE FOR DATA IMPORT
+# name...................Neele Elbersgerd
+# matriculation..........5564097
+# course.................Probabilistic and Statistical Modelling
+# program................Master of Cognitive Neuroscience, FU Berlin
+# instructor.............Dr. Benjamin Eppinger
+# semester...............Winter term 2021/2022
 #############################################################
-# supporting R code for import of data, winter semester 2021/2022
-# name: neele elbersgerd
-
-# Rproject 'StatsPaper' 
+# associated Rproject: 'StatsPaper' 
 # file '.Rprofile' automatically loads necessary packages 
 
+
 #--------- DATA IMPORT EXPERIMENTAL ---------#
-# read in single text files
+#--- read in single text files
 setwd('data/data_single/')
 filelist = list.files()
 exp_data = rbindlist(sapply(filelist, fread, simplify = FALSE))
@@ -17,7 +21,7 @@ setwd('../..')
 exp_data = subset(exp_data, exp_data$RT > 0)
 
 
-### create variables of interest
+#--- create variables of interest
 # difference between rewards
 exp_data$diff = ((exp_data$B-exp_data$A)/exp_data$A) %>% round(digits = 3)
 
@@ -50,23 +54,25 @@ exp_data$choice[exp_data$R == 0] = "early"
 
 
 #--------- DATA IMPORT COVARIATES ---------#
-# import
 cov_y = read.table("data/itc_young_cov.txt", header = TRUE, dec = ".")
 cov_o = read.table("data/itc_old_cov.txt", header = TRUE, dec = ".")
+
 # add column of age group 
 cov_y$agegroup = "younger adults"
 cov_o$agegroup = "older adults"
-# combine into one covariate file & rename to fit exp_data
+
+# combine into one covariate file & rename ID column to match exp_data
 cov_all = rbind(cov_y, cov_o)
 names(cov_all)[1] = "ID"
 
 
-#--------- COMBINE ---------#
-# create one data file with experimental and covariate data
+#--------- COMBINE TO ONE FILE ---------#
+
+#---  create one data file with experimental and covariate data
 data = left_join(exp_data, cov_all, by = c("agegroup", "ID"))
 
-# write final data to text file to make import easy in script 2
-# this way, variables are created once and stored for use in another session
+# write final data to text file
+# this way, one can load the data with all variables already created in the analysis script
 write.table(data, 'data/data_all.txt',
             sep = ",", dec = ".", row.names = FALSE, col.names = TRUE)
 
