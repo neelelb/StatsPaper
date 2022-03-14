@@ -75,5 +75,3 @@ data = left_join(exp_data, cov_all, by = c("agegroup", "ID"))
 # this way, one can load the data with all variables already created in the analysis script
 write.table(data, 'data/data_all.txt',
             sep = ",", dec = ".", row.names = FALSE, col.names = TRUE)
-
-
