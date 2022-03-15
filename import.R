@@ -68,7 +68,7 @@ names(cov_all)[1] = "ID"
 
 #--------- COMBINE TO ONE FILE ---------#
 
-#---  create one data file with experimental and covariate data
+#--- create one data file with experimental and covariate data
 data = left_join(exp_data, cov_all, by = c("agegroup", "ID"))
 
 # write final data to text file

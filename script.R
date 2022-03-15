@@ -71,22 +71,29 @@ data %>% summarise(SD = sd(B))
 #--- plotting 
 # raw RT
 plot(data$RT)
-hist(data$RT, breaks = 40, col="steelblue")
-boxplot(data$RT, col="steelblue")
+hist(data$RT, breaks = 40, col="#008080")
+boxplot(data$RT, col="#008080")
 
+# histogram condition (RT)
 ggplot(data, aes(x = RT)) +
   geom_histogram(aes(color = condition, fill = condition),
                  position = "identity", bins = 40, alpha = 0.4) +
-  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-  scale_fill_manual(values = c("#00AFBB", "#E7B800")) + 
+  scale_color_manual(values = c("#008080", "#E7B800")) +
+  scale_fill_manual(values = c("#008080", "#E7B800")) + 
   theme_bw()
 
-# boxplot agegroup & RT
-plot(data$agegroup, data$RT, col = "steelblue")
+# boxplot agegroup (RT)
+ggplot(data, aes(y = RT)) +
+  geom_boxplot(aes(color = agegroup, fill = agegroup), alpha = 0.4) +
+  scale_color_manual(values = c("#008080", "#E7B800")) +
+  scale_fill_manual(values = c("#008080", "#E7B800")) + 
+  theme_bw()
+
+# boxplot agegroup x condition (RT)
 ggplot(data, aes(x = condition, y = RT, color = agegroup)) +
   geom_boxplot() +
+  scale_color_manual(values = c("#008080", "#E7B800")) +
   theme_bw()
-
 
 #--- outlier checking
 # cutoff via 300ms lower threshold >> 135 trials
@@ -97,8 +104,10 @@ data = data %>% subset(RT >= 300)
 cut_low = mean(data$RT) - 3*sd(data$RT)
 cut_high = mean(data$RT) + 3*sd(data$RT)
 # how many values are above or below 3SD of mean? >> 264 below, 0 above
-data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
+# data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
 ### REMOVE? 
+
+
 
 
 #--------- ANALYSIS AND MODEL BUILD ---------#
@@ -106,117 +115,115 @@ data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
 m0 = lmer(RT ~ 1 + (1|ID), data = data) 
 summary(m0)
 
-#--- contrasts for SIMPLE EFFECTS
+#--- contrasts checking, Dummy Coding
 # compares each level of a variable to the specified reference level
 contrasts(factor(data$condition))
 contrasts(factor(data$agegroup))
-#relevel factors if necessary
+# relevel factors if necessary
 data$condition = relevel(factor(data$condition), ref = "delayed")
 data$agegroup = relevel(factor(data$agegroup), ref = "younger adults")
 
-m1.sim = lmer(RT ~ condition + (1|ID), data = data)
-summary(m1.sim)
-# delayed as the reference level: we can see that there is no significant difference in reaction times
-# between immediate and delayed conditions
-# Participants seemed not to react faster to choice pairs with immediate options, 
-# compared to choice pairs with only delayed option
+#--- adding condition
+m_cond = lmer(RT ~ condition + (1|ID), data = data)
+summary(m_cond)
+anova(m0, m_cond)
+# delayed as the reference level: we can see that there is a significant effect of condition 
+# Participants seemed to react faster to choice pairs with immediate options, 
+# compared to choice pairs with only delayed options
 
-# does it make sense to include a random slope, if there is no simple 
-# effect for condition before?
-
-# is there an interaction between age group and condition?
-m2.sim = lmer(RT ~ condition*agegroup + (1|ID), data = data)
-summary(m2.sim)
-# older participants do not differ significantly from younger adults in their reaction time
-# there is no interaction between agegroup and the condition
-
-
-m3.sim = lmer(RT ~ condition*agegroup + (1+condition|ID), data = data)
-summary(m3.sim)
-
-anova(m0, m1.sim, m2.sim)
+#--- adding age group
+# is there an effect of agegroup and an interaction between age group and condition?
+m_cond_age = lmer(RT ~ condition*agegroup + (1|ID), data = data)
+summary(m_cond_age)
+# older participants differ significantly from younger adults in their reaction time
+# there is a significant interaction between age group and condition
+anova(m0, m_cond_age)
 
 
+#--- adding random slope for condition
+m_ranslop = lmer(RT ~ condition*agegroup + (1+condition|ID), data = data)
+summary(m_ranslop)
+anova(m_cond_age, m_ranslop)
 
 
+#--- probing the interaction
+data_imm = subset(data, condition == "immediate")
+data_del = subset(data, condition == "delayed")
 
-#--- contrasts for MAIN EFFECTS
-# compares each level's deviance from the grand mean ("true" main effect)
-# just to check, does this make things different?
-contrasts(data$condition) = contr.sum 
+m_imm = lmer(RT ~ agegroup + (1|ID), data = data_imm)
+m_del = lmer(RT ~ agegroup + (1|ID), data = data_del)
+summary(m_imm)
+summary(m_del)
 
-m2.main = lmer(RT ~ condition*agegroup + (1|ID), data = data)
-summary(m2.main)
-# no harsh differences in fixed effect estimations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#--- initial simple regression model to check basic assumptions
-simreg = lm(RT ~ condition, data = data)
-plot(fitted(simreg),residuals(simreg))
-# new column: log-transform RT
-data$logRT = log(data$RT)
-# plot logRT
-hist(data$logRT, breaks = 80, col="steelblue")
-
-
+#--- confidence intervals
+confint(m_ranslop)
 
 
 
 #--------- MODEL ASSUMPTIONS ---------#
-qqnorm(resid(m0))
-plot(fitted(m0), resid(m0))
-hist(resid(m0), breaks=100)
+#--- normality assumption
+qqnorm(resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8, 
+       bty = "l", main = NULL); qqline(resid(m_ranslop))
+#hist(resid(m0), breaks=100)
 
-fixef(m0) # extract models fixed effects
-ranef(m0) # extract models random effects
-resid(m0) # extract models residuals
-# coef(null)            # extracts model coefficients
-# confint(res, level = 0.95, method = "Wald")
+#--- resid fitted plot
+plot(fitted(m_ranslop), resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8,
+     xlab="fitted", ylab="residuals", bty = "l", main = NULL)
+
+# log-transform RT?
+#data$logRT = log(data$RT)
+#hist(data$logRT, breaks = 80, col="steelblue")
 
 
-#--------- LIST OF SUBSETTED/AGGREGATED DATA SETS ---------#
-#--- running list of all the subsets & aggregates used for exploration & analysis
 
-# agg for every condition combination per ID
-agg_all = data %>% group_by(ID, agegroup, wm, diff, conflict, condition) %>%
-  summarise(.groups = "keep", n = n(), logRT=mean(logRT), R=mean(R))
 
-# agg per ID
-agg_id = data %>% group_by(ID, wm) %>%
-  summarise(.groups = "keep", n = n(), logRT = mean(logRT), R = mean(R))
 
-# agg per agegroup
-agg_age = data %>% group_by(agegroup) %>%
-  summarise(.groups = "keep", n = n(), logRT = mean(logRT), R = mean(R), 
-            wm = mean(wm, na.rm = TRUE))
-
-# agg per conflict
-agg_cnf = data %>% group_by(conflict) %>%
-  summarise(.groups = "keep", n = n(), logRT = mean(logRT), R = mean(R), 
-            wm = mean(wm, na.rm = TRUE))
 
 
 
 #--------- PLOT ANALYSIS RESULTS ---------#
+# interaction plot with raw data underneath
+ggplot(data, aes(y = RT, x = condition)) +
+  geom_point(aes(colour = agegroup), position = "jitter", alpha = 0.05) +
+  stat_summary(aes(colour=agegroup), fun = "mean", size = 2, geom = "point") +
+  stat_summary(aes(group = agegroup, colour = agegroup), fun = mean, geom= "line") + 
+  scale_color_manual(values = c("#008080", "#E7B800")) +
+  theme_bw()
+
+# extracting random intercept and slope values
+plot_fit = data.frame(ID = levels(data$ID),
+                      intercepts = coef(m_ranslop)$ID[,1],
+                      slopes = coef(m_ranslop)$ID[,2])
+plot_fit$agegroup = 0
+plot_fit$agegroup[plot_fit$ID <= 362] = "younger adults"
+plot_fit$agegroup[plot_fit$ID > 362] = "older adults"
+plot_fit$agegroup = as.factor(plot_fit$agegroup)
 
 
+data$predicted = predict(m_ranslop)   # save the predicted values from the model
+data$residuals = residuals(m_ranslop) # Save the residual values from the model
+
+# plot the actual and predicted values
+ggplot(data, aes(x = condition, y = RT)) +
+  geom_smooth(aes(group=agegroup),method = "lm", se = FALSE, color = "lightgrey") +  # Plot regression slope
+  geom_segment(aes(xend = condition, yend = predicted), alpha = .2) +  # alpha to fade lines
+  # > Color AND size adjustments made here...
+  #geom_point(aes(color = abs(residuals), size = abs(residuals))) + # size also mapped
+  #scale_color_continuous(low = "black", high = "red") +
+  #guides(color = FALSE, size = FALSE) +  # Size legend also removed
+  #geom_point(aes(x = predicted), shape = 1) +
+  theme_bw()
+
+
+dotplot(ranef(m_ranslop))
+
+ggplot(data, aes(x = condition, y = RT)) + 
+  geom_point(shape = 20, alpha = 0.4, position="jitter") + 
+  #geom_abline(slope = plot_fit$slopes, intercept=plot_fit$intercepts, alpha = 0.2) +
+  geom_abline(slope=summary(m_ranslop)$coeff[2,1], intercept=summary(m_ranslop)$coeff[1,1], colour="red") +
+  theme_bw()
+  
+
+describeBy(x = data$RT, list(data$condition,data$agegroup), mat = TRUE)
+
+  
