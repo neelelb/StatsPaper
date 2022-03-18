@@ -19,15 +19,13 @@ head(data)
     # ID: participant ID,
     # A: amount of reward for first option; DA: delay until reward A is received (7, 14 days)
     # B: amount of reward for second option; DB: additional delay in days (on top of DA) of receiving reward B (14, 28, 42 days)
-    # R: chose later (delayed) option (= 1), binary
-    # RT: response time in ms
-    # diff: % difference in reward
+    # R: chose later (delayed) option (= 1); RT: response time in ms
+    # diff: % difference in reward; conflict: low vs. high conflict (based on % difference)
     # agegroup: younger adults vs. older adults
-    # conflict: low vs. high conflict (based on % difference)
     # condition: immediate vs. delayed option A
-    # delay: two vs. six weeks
+    # delay: two, four, six weeks
     # choice: did the participants choose the early or late option
-    # em: episodic memory score; wm: working memory score; gf: fluid intelligence score; speed: speed of processing score
+    # em: episodic memory; wm: working memory ; gf: fluid intelligence; speed: speed of processing
     ##
 
 # convert some variables to factors
@@ -82,6 +80,17 @@ ggplot(data, aes(x = RT)) +
   scale_fill_manual(values = c("#008080", "#E7B800")) + 
   theme_bw()
 
+# histogram agegroup (RT)
+ggplot(data, aes(x = RT)) +
+  geom_histogram(aes(color = agegroup, fill = agegroup),
+                 position = "identity", bins = 40, alpha = 0.4) +
+  scale_color_manual(values = c("#008080", "#E7B800")) +
+  scale_fill_manual(values = c("#008080", "#E7B800")) + 
+  theme_bw()
+# look at skewness of RT data
+skewness(data$RT)
+skewness(data_y$RT);skewness(data_o$RT)
+
 # boxplot agegroup (RT)
 ggplot(data, aes(y = RT)) +
   geom_boxplot(aes(color = agegroup, fill = agegroup), alpha = 0.4) +
@@ -103,8 +112,8 @@ data = data %>% subset(RT >= 300)
 # cutoffs via standard deviation ?
 cut_low = mean(data$RT) - 3*sd(data$RT)
 cut_high = mean(data$RT) + 3*sd(data$RT)
-# how many values are above or below 3SD of mean? >> 264 below, 0 above
-# data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
+# how many values are above or below 3SD of mean?
+data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
 ### REMOVE? 
 
 
@@ -164,7 +173,7 @@ confint(m_ranslop)
 #--- normality assumption
 qqnorm(resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8, 
        bty = "l", main = NULL); qqline(resid(m_ranslop))
-#hist(resid(m0), breaks=100)
+hist(resid(m0), breaks=100)
 
 #--- resid fitted plot
 plot(fitted(m_ranslop), resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8,
@@ -177,53 +186,45 @@ plot(fitted(m_ranslop), resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8,
 
 
 
-
-
-
-
 #--------- PLOT ANALYSIS RESULTS ---------#
-# interaction plot with raw data underneath
-ggplot(data, aes(y = RT, x = condition)) +
-  geom_point(aes(colour = agegroup), position = "jitter", alpha = 0.05) +
-  stat_summary(aes(colour=agegroup), fun = "mean", size = 2, geom = "point") +
-  stat_summary(aes(group = agegroup, colour = agegroup), fun = mean, geom= "line") + 
-  scale_color_manual(values = c("#008080", "#E7B800")) +
-  theme_bw()
+summary = describeBy(x = data$RT, list(data$condition,data$agegroup), mat = TRUE)
 
-# extracting random intercept and slope values
-plot_fit = data.frame(ID = levels(data$ID),
-                      intercepts = coef(m_ranslop)$ID[,1],
-                      slopes = coef(m_ranslop)$ID[,2])
-plot_fit$agegroup = 0
-plot_fit$agegroup[plot_fit$ID <= 362] = "younger adults"
-plot_fit$agegroup[plot_fit$ID > 362] = "older adults"
-plot_fit$agegroup = as.factor(plot_fit$agegroup)
+#--- boxplot with densities and raw data
+aggdata = data %>% group_by(ID, agegroup, condition) %>% summarise(.groups = "keep", n = n(), RT = mean(RT)/1000)
 
-
-data$predicted = predict(m_ranslop)   # save the predicted values from the model
-data$residuals = residuals(m_ranslop) # Save the residual values from the model
-
-# plot the actual and predicted values
-ggplot(data, aes(x = condition, y = RT)) +
-  geom_smooth(aes(group=agegroup),method = "lm", se = FALSE, color = "lightgrey") +  # Plot regression slope
-  geom_segment(aes(xend = condition, yend = predicted), alpha = .2) +  # alpha to fade lines
-  # > Color AND size adjustments made here...
-  #geom_point(aes(color = abs(residuals), size = abs(residuals))) + # size also mapped
-  #scale_color_continuous(low = "black", high = "red") +
-  #guides(color = FALSE, size = FALSE) +  # Size legend also removed
-  #geom_point(aes(x = predicted), shape = 1) +
-  theme_bw()
+pdf(file = "figures/pirateplot.pdf", width = 12, height = 10)
+pirateplot(formula = RT ~ condition + agegroup, data = aggdata,
+           theme = 3, pal = c("#008080", "#E7B800"),
+           bean.f.o = 0.3, bean.b.col = c("#008080", "#E7B800"), bean.b.o = 0.3,
+           point.o = 0.5, point.pch = 20, point.cex = 1.3,
+           point.col = c("#008080", "#E7B800"),
+           inf.method = "iqr", inf.disp = "line", inf.f.col = "black", 
+           avg.line.lwd = 3, 
+           sortx = "mean",
+           gl.col = "lightgrey", ylim = c(0.4,3.6), bty="n", 
+           ylab = 'Reaction Time [in s]', xaxt='n', cex.lab = 1.5)
+          text(c(1.5, 4.5), c(0.4,0.4), c("Younger Adults", "Older Adults"), cex = 1.5)
+          legend("bottom", yjust = 1, legend = c("Immediate", "Delayed"), bty="n", col = c("#008080", "#E7B800"), pch = c(20, 20), cex = 1.5)
+dev.off()
 
 
-dotplot(ranef(m_ranslop))
+#--- plot the random effects
+my.settings = list(
+  plot.symbol = list(pch = 20, col = "#008080"),
+  strip.background = list(col = "white"),
+  strip.border = list(col = "transparent"),
+  plot.line.col = "black",
+  axis.line = list(col = c(1,0)),
+  par.main.text = list(col = "transparent")
+)
 
-ggplot(data, aes(x = condition, y = RT)) + 
-  geom_point(shape = 20, alpha = 0.4, position="jitter") + 
-  #geom_abline(slope = plot_fit$slopes, intercept=plot_fit$intercepts, alpha = 0.2) +
-  geom_abline(slope=summary(m_ranslop)$coeff[2,1], intercept=summary(m_ranslop)$coeff[1,1], colour="red") +
-  theme_bw()
-  
+pdf(file = "figures/randomeffects.pdf", width = 12, height = 10)
+dotplot(ranef(m_ranslop), 
+        strip = strip.custom(factor.levels = c("Random Intercepts", "Random slopes for condition")),
+        ylab = list(label="Participant", cex=1.5), bty="n",
+        scales = list(alternating=FALSE, tck = c(1,0), y = list(tick.number= NULL, cex=0), x = list(cex = 1.3)), 
+        between = list(x = 0.5), par.strip.text=list(cex=1.5),
+        par.settings = my.settings)
+dev.off()
 
-describeBy(x = data$RT, list(data$condition,data$agegroup), mat = TRUE)
 
-  
