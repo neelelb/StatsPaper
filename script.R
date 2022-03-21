@@ -109,13 +109,9 @@ ggplot(data, aes(x = condition, y = RT, color = agegroup)) +
 subset(data, RT < 300)["RT"] %>% nrow()
 data = data %>% subset(RT >= 300)
 
-# cutoffs via standard deviation ?
-cut_low = mean(data$RT) - 3*sd(data$RT)
-cut_high = mean(data$RT) + 3*sd(data$RT)
-# how many values are above or below 3SD of mean?
-data %>% subset(RT < cut_low | RT > cut_high) %>% nrow()
-### REMOVE? 
-
+# trial number update per participant
+trials = data %>% group_by(ID) %>% count() 
+trials$n %>% summary()
 
 
 
