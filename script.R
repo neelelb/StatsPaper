@@ -175,7 +175,7 @@ qqnorm(resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8,
        bty = "l", main = NULL); qqline(resid(m_ranslop))
 hist(resid(m0), breaks=100)
 
-#--- resid fitted plot
+#--- resid fitted plot, linearity & homoscedasticity?
 plot(fitted(m_ranslop), resid(m_ranslop), col = "#008080", pch = 1, cex = 0.8,
      xlab="fitted", ylab="residuals", bty = "l", main = NULL)
 
